@@ -6,56 +6,87 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 21:13:59 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/06 22:43:07 by alvina           ###   ########.fr       */
+/*   Updated: 2023/03/07 12:19:04 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static t_everything	*eth_object(int ac, char **av)
+void    is_eating(t_everything *eth, t_list *aot)
 {
-	static t_everything *eth;
-
-	if (ac == 0)
-		return (eth);
-	eth = malloc(sizeof(t_everything));
-	eth->philosopher = (int)ft_atoll(av[1]);
-	eth->fork = eth->philosopher;
-	eth->time_to_die = ft_atoll(av[2]);
-	eth->time_to_eat = ft_atoll(av[3]);
-	eth->time_to_sleep = ft_atoll(av[4]);
-	if (ac == 6)
-		eth->nb_meal = (int)ft_atoll(av[5]);
-	eth->aot = NULL;
-	return (eth);
-}
-
-static t_philo	*pair_init(int num)
-{
-	t_philo	*new;
-
-	new = malloc(sizeof(t_philo));
-	new->num = num;
-	pthread_mutex_init(&(new->mutex), NULL);
-	return (new);
-}
-
-static t_list	*aot_init(int nb)
-{
-	int		i;
-	t_list	*lst;
-	t_list	*new;
-	t_philo	*philo;
-
-	i = 0;
-	lst = NULL;
-	while (++i < nb + 1)
+	struct timeval now;
+	int fork;
+	t_philo			*curr;
+	
+	fork = 0;
+	curr = aot->philo;
+	pthread_mutex_lock(&(curr->fork));
+	gettimeofday(&now, NULL);
+	printf("%ld : philo %d has taken a fork\n", eth->start - ms_time(now));
+	curr->forks++;
+	pthread_mutex_lock(&(aot->next->philo->fork));
+	gettimeofday(&now, NULL);
+	printf("%ld : philo %d has taken a fork\n", eth->start - ms_time(now));
+   	curr->forks++;
+	if (curr->forks == 2)
 	{
-		philo = pair_init(i);
-		new = ft_lstnew((t_philo *)philo);
-		ft_lstadd_back(&lst, new);
+		gettimeofday(&now, NULL);
+		curr->timestamp = eth->start - ms_time(now);
+		printf("%ld : philo %d is eating\n", curr->timestamp);
+		usleep(eth->time_to_eat / 1000);
 	}
-	return (lst);	
+    pthread_mutex_unlock(&(curr->fork));
+	curr->forks--;
+	pthread_mutex_unlock(&(aot->next->philo->fork));
+	curr->forks--;
+}
+
+long	ms_time(struct timeval time)
+{
+	return (((time.tv_sec * 1000000) + time.tv_usec) / 1000);
+}
+
+void	departure(t_everything *eth, t_list *aot, int *state)
+{
+	t_philo *curr;
+
+	curr = eth->aot;
+	if (curr->num % 2 != 0 && *state == STARTING)
+	{
+		if (eth->aot->next)
+			is_eating(eth, eth->aot);
+		else
+			is_sleeping(eth, eth->aot);
+	}
+	else
+		is_thinking(eth, eth->aot);
+	*state = PROCESSING;
+	curr->is_living += curr->timestamp;
+}
+
+void	*life(void *arg)
+{
+	t_everything	*eth;
+	t_philo			*curr;
+	int				state;
+	int				action;
+	struct timeval	ts;
+	struct timeval	now;
+	
+	state = STARTING;
+	eth = (t_everything *)arg;
+	curr = eth->aot->philo;
+	gettimeofday(&ts, NULL);
+	eth->start = ms_time(ts);
+	while (curr->alive)
+	{
+		if (state == STARTING)
+			departure(eth, eth->aot, state);
+		// taking forks
+		if (curr->forks == 2 ) // && est en train de penser avec enum
+			is_eating(eth, eth->aot);
+		else
+	}
 }
 
 int	main(int ac, char **av)

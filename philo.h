@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 22:00:23 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/06 22:39:15 by alvina           ###   ########.fr       */
+/*   Updated: 2023/03/07 12:19:15 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,27 @@
 #include <pthread.h>
 #include <sys/time.h>
 
+# define STARTING 1
+# define PROCESSING 0
+
+typedef enum s_action
+{
+	is_taking_forks;
+	is_eating;
+	is_sleeping;
+	is_thinking;
+}
+
 typedef struct s_philo
 {
-	pthread_mutex_t mutex;
-	int		        num;
+	int				num;
+	pthread_mutex_t fork;
+	int				forks;
+	long			timestamp;
+	long			is_eating;
+	long			is_sleeping;
+	long			is_living;
+	int				alive;
 }				t_philo;
 
 typedef struct s_list
@@ -32,6 +49,7 @@ typedef struct s_everything
 {
 	int		philosopher;
 	int		fork;
+	long	start;
 	long	time_to_die;
 	long	time_to_eat;
 	long	time_to_sleep;
@@ -39,7 +57,14 @@ typedef struct s_everything
 	t_list	*aot;
 }				t_everything;
 
+//   --- UTILS ---
 long	ft_atoll(const char *nptr);
 t_list	*ft_lstlast(t_list *lst);
 t_list	*ft_lstadd_back(t_list **lst, t_list *new);
 t_list	*ft_lstnew(void *content);
+t_list	*ft_list_at(t_list *begin_list, int nbr);
+
+//    --- INITIALISATION ---
+t_everything	*eth_object(int ac, char **av);
+t_list	*aot_init(int nb);
+t_philo	*philo_init(int num);

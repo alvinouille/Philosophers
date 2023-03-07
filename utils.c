@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 21:17:56 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/06 22:37:06 by alvina           ###   ########.fr       */
+/*   Updated: 2023/03/07 11:12:42 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,24 @@ long	ft_atoll(const char *nptr)
         return (0);
     else
 	    return (nb * neg);
+}
+
+t_list	*ft_list_at(t_list *begin_list, int nbr)
+{
+	int	i;
+	t_list			*element;
+
+	i = 0;
+	element = begin_list;
+	while (i != nbr && (element))
+	{
+		element = element->next;
+		i++;
+	}
+	if (i == nbr)
+		return (element);
+	else
+		return (0);
 }
 
 t_list	*ft_lstnew(void *content)
