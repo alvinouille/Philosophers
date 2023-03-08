@@ -6,18 +6,19 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 21:13:59 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/07 12:19:04 by alvina           ###   ########.fr       */
+/*   Updated: 2023/03/08 12:23:19 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void    is_eating(t_everything *eth, t_list *aot)
+// + faire statique qui renvoit le temps a chaque fois
+
+static void	taking_forks(t_everything *eth, t_list *aot)
 {
 	struct timeval now;
 	int fork;
-	t_philo			*curr;
-	
+	t_philo		*curr;
 	fork = 0;
 	curr = aot->philo;
 	pthread_mutex_lock(&(curr->fork));
@@ -29,63 +30,84 @@ void    is_eating(t_everything *eth, t_list *aot)
 	printf("%ld : philo %d has taken a fork\n", eth->start - ms_time(now));
    	curr->forks++;
 	if (curr->forks == 2)
-	{
-		gettimeofday(&now, NULL);
-		curr->timestamp = eth->start - ms_time(now);
-		printf("%ld : philo %d is eating\n", curr->timestamp);
-		usleep(eth->time_to_eat / 1000);
-	}
+		curr->state = READY_TO_EAT;
+}
+
+static void    eat(t_everything *eth, t_list *aot)
+{
+	struct timeval now;
+	int fork;
+	t_philo			*curr;
+
+	curr = aot->philo;
+	gettimeofday(&now, NULL);
+	curr->timestamp = eth->start - ms_time(now);
+	printf("%ld : philo %d is eating\n", curr->timestamp);
+	usleep(eth->time_to_eat / 1000);
     pthread_mutex_unlock(&(curr->fork));
 	curr->forks--;
 	pthread_mutex_unlock(&(aot->next->philo->fork));
 	curr->forks--;
+	curr->state = READY_TO_SLEEP;
 }
 
-long	ms_time(struct timeval time)
+static long	ms_time(struct timeval time)
 {
 	return (((time.tv_sec * 1000000) + time.tv_usec) / 1000);
 }
 
-void	departure(t_everything *eth, t_list *aot, int *state)
+static void	departure(t_everything *eth, t_list *aot, int *flag)
 {
 	t_philo *curr;
 
 	curr = eth->aot;
-	if (curr->num % 2 != 0 && *state == STARTING)
+	if (curr->num % 2 != 0 && *flag == STARTING)
 	{
 		if (eth->aot->next)
-			is_eating(eth, eth->aot);
+			eat(eth, eth->aot);
 		else
 			is_sleeping(eth, eth->aot);
 	}
 	else
 		is_thinking(eth, eth->aot);
-	*state = PROCESSING;
+	*flag = PROCESSING;
 	curr->is_living += curr->timestamp;
 }
 
-void	*life(void *arg)
+static void	*life(void *arg)
 {
 	t_everything	*eth;
 	t_philo			*curr;
-	int				state;
+	int				flag;
 	int				action;
 	struct timeval	ts;
 	struct timeval	now;
+	static int counter;
 	
-	state = STARTING;
+	flag = STARTING;
 	eth = (t_everything *)arg;
 	curr = eth->aot->philo;
 	gettimeofday(&ts, NULL);
 	eth->start = ms_time(ts);
 	while (curr->alive)
 	{
-		if (state == STARTING)
-			departure(eth, eth->aot, state);
-		// taking forks
-		if (curr->forks == 2 ) // && est en train de penser avec enum
-			is_eating(eth, eth->aot);
+		if (flag == STARTING)
+			departure(eth, eth->aot, flag);
 		else
+		{
+			if (curr->state = SLEEPING)
+				taking_forks(eth, eth->aot);
+			else if (curr->state = READY_TO_EAT)
+				eat(eth, eth->aot);
+			else
+			{
+				usleep(1000);
+				curr->state = SLEEPING;
+			}
+		}
+		counter++;
+		if (counter == 3)
+			curr->alive = 0;
 	}
 }
 

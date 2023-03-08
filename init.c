@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 10:48:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/07 12:15:59 by alvina           ###   ########.fr       */
+/*   Updated: 2023/03/08 11:59:43 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ t_philo	*philo_init(int num)
 	new->num = num;
 	pthread_mutex_init(&(new->fork), NULL);
 	new->forks = 0;
+	new->state = -1;
 	new->timestamp = 0;
 	new->is_eating = 0;
 	new->is_sleeping = 0;

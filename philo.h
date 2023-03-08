@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 22:00:23 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/07 12:19:15 by alvina           ###   ########.fr       */
+/*   Updated: 2023/03/08 12:35:03 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,19 @@
 # define STARTING 1
 # define PROCESSING 0
 
-typedef enum s_action
+typedef enum e_action
 {
-	is_taking_forks;
-	is_eating;
-	is_sleeping;
-	is_thinking;
-}
+	READY_TO_EAT,
+	READY_TO_SLEEP,
+	READY_TO_THINK
+}	t_action;
 
 typedef struct s_philo
 {
 	int				num;
 	pthread_mutex_t fork;
 	int				forks;
+	int				state;
 	long			timestamp;
 	long			is_eating;
 	long			is_sleeping;
