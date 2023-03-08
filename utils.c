@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 21:17:56 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/07 11:12:42 by alvina           ###   ########.fr       */
+/*   Updated: 2023/03/08 18:52:29 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,58 +37,58 @@ long	ft_atoll(const char *nptr)
 	    return (nb * neg);
 }
 
-t_list	*ft_list_at(t_list *begin_list, int nbr)
-{
-	int	i;
-	t_list			*element;
+// t_list	*ft_list_at(t_list *begin_list, int nbr)
+// {
+// 	int	i;
+// 	t_list			*element;
 
-	i = 0;
-	element = begin_list;
-	while (i != nbr && (element))
-	{
-		element = element->next;
-		i++;
-	}
-	if (i == nbr)
-		return (element);
-	else
-		return (0);
-}
+// 	i = 0;
+// 	element = begin_list;
+// 	while (i != nbr && (element))
+// 	{
+// 		element = element->next;
+// 		i++;
+// 	}
+// 	if (i == nbr)
+// 		return (element);
+// 	else
+// 		return (0);
+// }
 
-t_list	*ft_lstnew(void *content)
-{
-	t_list	*list;
+// t_list	*ft_lstnew(void *content)
+// {
+// 	t_list	*list;
 
-	list = NULL;
-	list = malloc(sizeof(t_list));
-	if (list)
-	{
-		list->philo = content;
-		list->next = NULL;
-	}
-	return (list);
-}
+// 	list = NULL;
+// 	list = malloc(sizeof(t_list));
+// 	if (list)
+// 	{
+// 		list->philo = content;
+// 		list->next = NULL;
+// 	}
+// 	return (list);
+// }
 
-t_list	*ft_lstlast(t_list *lst)
-{
-	while (lst && lst->next)
-		lst = lst->next;
-	return (lst);
-}
+// t_list	*ft_lstlast(t_list *lst)
+// {
+// 	while (lst && lst->next)
+// 		lst = lst->next;
+// 	return (lst);
+// }
 
-t_list	*ft_lstadd_back(t_list **lst, t_list *new)
-{
-	t_list	*last;
+// t_list	*ft_lstadd_back(t_list **lst, t_list *new)
+// {
+// 	t_list	*last;
 
-	if (*lst == NULL)
-		*lst = new;
-	else
-	{
-		if (lst && new)
-		{
-			last = ft_lstlast(*lst);
-			last->next = new;
-		}
-	}
-    return (*lst);
-}
+// 	if (*lst == NULL)
+// 		*lst = new;
+// 	else
+// 	{
+// 		if (lst && new)
+// 		{
+// 			last = ft_lstlast(*lst);
+// 			last->next = new;
+// 		}
+// 	}
+//     return (*lst);
+// }

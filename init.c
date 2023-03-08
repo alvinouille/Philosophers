@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 10:48:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/08 11:59:43 by alvina           ###   ########.fr       */
+/*   Updated: 2023/03/08 19:53:04 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,41 +27,38 @@ t_everything	*eth_object(int ac, char **av)
 	eth->time_to_sleep = ft_atoll(av[4]);
 	if (ac == 6)
 		eth->nb_meal = (int)ft_atoll(av[5]);
-	eth->aot = NULL;
 	return (eth);
 }
 
-t_philo	*philo_init(int num)
+t_philo	*philo_init(int num, t_everything *eth)
 {
-	t_philo	*new;
+	t_philo *new;
+	pthread_t p;
+	pthread_mutex_t fork;
 
 	new = malloc(sizeof(t_philo));
+	new->eth = eth;
 	new->num = num;
+	new->thread = p;
+	new->fork = fork;
 	pthread_mutex_init(&(new->fork), NULL);
 	new->forks = 0;
 	new->state = -1;
-	new->timestamp = 0;
-	new->is_eating = 0;
-	new->is_sleeping = 0;
-	new->is_living = 0;
-	new->alive = 1;
+	new->is_living = -1;
 	return (new);
 }
 
-t_list	*aot_init(int nb)
+t_philo	**tab_philo_init(int nb, t_everything *eth)
 {
 	int		i;
-	t_list	*lst;
-	t_list	*new;
-	t_philo	*philo;
+	t_philo	**philo;
 
 	i = 0;
-	lst = NULL;
-	while (++i < nb + 1)
+	philo = malloc(sizeof(t_philo *) * nb);
+	while (i < nb)
 	{
-		philo = philo_init(i);
-		new = ft_lstnew((t_philo *)philo);
-		ft_lstadd_back(&lst, new);
+		philo[i] = philo_init(i + 1, eth);
+		i++;
 	}
-	return (lst);	
+	return (philo);	
 }
