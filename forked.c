@@ -1,38 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   forked.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/06 21:17:56 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/10 21:18:42 by alvina           ###   ########.fr       */
+/*   Created: 2023/03/09 20:30:16 by alvina            #+#    #+#             */
+/*   Updated: 2023/03/10 20:26:32 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-long	ft_atoll(const char *nptr)
-{
-	int		i;
-	long    nb;
-	int		neg;
 
-	i = 0;
-	nb = 0;
-	neg = 1;
-	if (nptr[i] == '-' || nptr[i] == '+')
+int	what_the_fork(int num, int lock, t_everything *eth)
+{
+	static t_fork	**fork;
+
+	if (lock == -1)
 	{
-		if (nptr[i] == '-')
-			neg = -1;
-		i++;
+		fork = tab_fork_init(eth);
+		return (0);
 	}
-	while (nptr[i] && nptr[i] >= '0' && nptr[i] <= '9')
+	if (lock)
 	{
-		nb = nb * 10 + (nptr[i] - 48);
-		i++;
+		if (!pthread_mutex_lock(&(fork[num - 1]->fork)))
+		{
+			printf("forked %d taken\n", num);
+			return (1);
+		}
 	}
-    if (nptr[i])
-        return (0);
-    else
-	    return (nb * neg);
+	else
+	{
+		if (!pthread_mutex_unlock(&(fork[num - 1]->fork)))
+		{
+			printf("forked %d freed\n", num);
+			return (0);
+		}
+	}
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 10:48:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/08 19:53:04 by alvina           ###   ########.fr       */
+/*   Updated: 2023/03/09 20:45:24 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ t_everything	*eth_object(int ac, char **av)
 	return (eth);
 }
 
+
 t_philo	*philo_init(int num, t_everything *eth)
 {
 	t_philo *new;
@@ -40,9 +41,8 @@ t_philo	*philo_init(int num, t_everything *eth)
 	new->eth = eth;
 	new->num = num;
 	new->thread = p;
-	new->fork = fork;
-	pthread_mutex_init(&(new->fork), NULL);
-	new->forks = 0;
+	new->fork_one = 0;
+	new->fork_two = 0;
 	new->state = -1;
 	new->is_living = -1;
 	return (new);
@@ -61,4 +61,29 @@ t_philo	**tab_philo_init(int nb, t_everything *eth)
 		i++;
 	}
 	return (philo);	
+}
+
+t_fork	*fork_init(void)
+{
+	t_fork *new;
+
+	new = malloc(sizeof(t_fork));
+	pthread_mutex_init(&(new->fork), NULL);
+	new->status = 0;
+	return (new);
+}
+
+t_fork **tab_fork_init(t_everything *eth)
+{
+	int		i;
+	t_fork	**tab;
+
+	i = 0;
+	tab = malloc(sizeof(t_fork *) * eth->philosopher);
+	while (i < eth->philosopher)
+	{
+		tab[i] = fork_init();
+		i++;
+	}
+	return (tab);
 }
