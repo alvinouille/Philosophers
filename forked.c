@@ -25,7 +25,7 @@ int	what_the_fork(int num, int lock, t_everything *eth)
 	{
 		if (!pthread_mutex_lock(&(fork[num - 1]->fork)))
 		{
-			printf("forked %d taken\n", num);
+			// printf("forked %d taken\n", num);
 			return (1);
 		}
 	}
@@ -33,7 +33,7 @@ int	what_the_fork(int num, int lock, t_everything *eth)
 	{
 		if (!pthread_mutex_unlock(&(fork[num - 1]->fork)))
 		{
-			printf("forked %d freed\n", num);
+			// printf("forked %d freed\n", num);
 			return (0);
 		}
 	}

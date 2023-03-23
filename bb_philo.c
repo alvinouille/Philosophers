@@ -27,33 +27,38 @@ int	ft_usleep(int num, long time, t_philo *philo)
 	return (1);
 }
 
-long	best_time(t_everything *eth)
+int	enough_meal(int nb_meals, int nb_philo, int flag)
 {
-	if (eth->time_to_die <= eth->time_to_eat && eth->time_to_die <= eth->time_to_sleep)
-		return (eth->time_to_die);
-	if (eth->time_to_sleep <= eth->time_to_eat && eth->time_to_sleep <= eth->time_to_die)
-		return (eth->time_to_sleep);
-	if (eth->time_to_eat <= eth->time_to_sleep && eth->time_to_eat <= eth->time_to_die)
-		return (eth->time_to_eat);
+	static int meals;
+
+	if (flag)
+		meals++;
+	printf("meals = %d\n", meals);
+	if (meals >= (nb_meals * nb_philo))
+		return (1);
+	return (0);
 }
 
 static int    eat(t_philo *philo)
 {
 	while (!philo->fork_one || !philo->fork_two)
 	{
-		if (!ft_usleep(philo->num, 100, philo))
+		if (!ft_usleep(philo->num, 1, philo))
 			return (0);
-		if (philo->num == 1)
+		if (philo->num % 2 != 0)  // philo numero impair
 		{
 			if (!philo->fork_one)
 			{
-				philo->fork_one = what_the_fork(philo->eth->philosopher, 1, philo->eth);
+				philo->fork_one = what_the_fork(philo->num, 1, philo->eth);
 				if (philo->fork_one)
 					master_of_time(philo->num, TAKE_A_FORK, philo);
 			}
 			if (!philo->fork_two)
 			{
-				philo->fork_two = what_the_fork(philo->num, 1, philo->eth);
+				if (philo->num == 1)
+					philo->fork_two = what_the_fork(philo->eth->philosopher, 1, philo->eth); // philo un
+				else
+					philo->fork_two = what_the_fork(philo->num - 1, 1, philo->eth);
 				if (philo->fork_two)
 					master_of_time(philo->num, TAKE_A_FORK, philo);
 			}
@@ -75,9 +80,24 @@ static int    eat(t_philo *philo)
 		}
 	}
     philo->state = ABOUT_TO_EAT;
+	master_of_time(0, 0, NULL);
 	master_of_time(philo->num, ABOUT_TO_EAT, philo);
 	if (!ft_usleep(philo->num, philo->eth->time_to_eat, philo))
 		return (0);
+	if (philo->eth->nb_meal)
+	{
+		philo->meals++;
+		if (philo->meals < philo->eth->nb_meal)
+		{
+			if (enough_meal(philo->eth->nb_meal, philo->eth->philosopher, 1))
+				return (0);
+		}
+		else
+		{
+			if (enough_meal(philo->eth->nb_meal, philo->eth->philosopher, 0))
+				return (0);
+		}
+	}
 	if (philo->num == 1)
 	{
 		if (philo->fork_one)
@@ -108,7 +128,7 @@ static int    sleep_(t_philo *philo)
 static int    think(t_philo *philo)
 {
 	master_of_time(philo->num, ABOUT_TO_THINK, philo);
-	if (!ft_usleep(philo->num, best_time(philo->eth), philo))
+	if (!ft_usleep(philo->num, 1, philo))
 		return (0);
 	philo->state = TAKE_A_FORK;
 	return (1);
@@ -148,14 +168,14 @@ int	master_of_time(int num, int state, t_philo *philo)
 	struct timeval	now;
 	long			time;
 
-	if (!num)
+	if (num == 0)
 	{
 		gettimeofday(&ts, NULL);
 		return (1);
 	}
 	gettimeofday(&now, NULL);
 	time = ms_time(now) - ms_time(ts);
-	if (time > (philo->eth->time_to_die / 1000))
+	if (time > philo->eth->time_to_die)
 	{
 		printf("%ld : philo %d died\n", time, num);
 		return (0);
@@ -195,7 +215,7 @@ static void	*life(void *arg)
                 philo->is_living = think(philo);
 		}
 	}
-	exit(0);
+	return (NULL);
 }
 
 int main(int ac, char **av)
@@ -222,7 +242,8 @@ int main(int ac, char **av)
 	i = 0;
 	while (i < eth->philosopher)
     {
-        pthread_join(philo[i]->thread, NULL);
+        if (pthread_join(philo[i]->thread, NULL) == 0)
+			return (0);
 		i++;
 	}
 }

@@ -27,6 +27,8 @@ t_everything	*eth_object(int ac, char **av)
 	eth->time_to_sleep = ft_atoll(av[4]);
 	if (ac == 6)
 		eth->nb_meal = (int)ft_atoll(av[5]);
+	else
+		eth->nb_meal = 0;
 	return (eth);
 }
 
@@ -45,6 +47,9 @@ t_philo	*philo_init(int num, t_everything *eth)
 	new->fork_two = 0;
 	new->state = -1;
 	new->is_living = -1;
+	new->meals = 0;
+	new->ts.tv_sec = 0;
+	new->ts.tv_usec = 0;
 	return (new);
 }
 

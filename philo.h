@@ -49,6 +49,8 @@ typedef struct s_philo
 	int				fork_two;
 	int				state;
 	long			is_living;
+	int				meals;
+	struct timeval	ts;
 	t_everything	*eth;
 }				t_philo;
 
