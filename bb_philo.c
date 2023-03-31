@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   bb_philo.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:26:07 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/10 21:16:24 by alvina           ###   ########.fr       */
+/*   Updated: 2023/03/31 15:02:08 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,15 +87,23 @@ static int    eat(t_philo *philo)
 	if (philo->eth->nb_meal)
 	{
 		philo->meals++;
-		if (philo->meals < philo->eth->nb_meal)
+		if (philo->meals <= philo->eth->nb_meal)
 		{
 			if (enough_meal(philo->eth->nb_meal, philo->eth->philosopher, 1))
+			{
+				printf("1\n");
+				// exit(0);
 				return (0);
+			}
 		}
 		else
 		{
 			if (enough_meal(philo->eth->nb_meal, philo->eth->philosopher, 0))
+			{
+				printf("2\n");
 				return (0);
+			}
+				// return (0);
 		}
 	}
 	if (philo->num == 1)
@@ -210,11 +218,12 @@ static void	*life(void *arg)
 			if (philo->state == TAKE_A_FORK)
 				philo->is_living = eat(philo);
 			else if (philo->state == ABOUT_TO_SLEEP)
-                philo->is_living = sleep_(philo);
+				philo->is_living = sleep_(philo);
             else
                 philo->is_living = think(philo);
 		}
 	}
+	printf("end\n");
 	return (NULL);
 }
 
