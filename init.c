@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 10:48:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/09 20:45:24 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/14 17:37:18 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ t_everything	*eth_object(int ac, char **av)
 	eth = malloc(sizeof(t_everything));
 	eth->philosopher = (int)ft_atoll(av[1]);
 	eth->fork = eth->philosopher;
-	eth->start = 0;
 	eth->time_to_die = ft_atoll(av[2]);
 	eth->time_to_eat = ft_atoll(av[3]);
 	eth->time_to_sleep = ft_atoll(av[4]);
+	pthread_mutex_init(&(eth->finish), NULL);
 	if (ac == 6)
 		eth->nb_meal = (int)ft_atoll(av[5]);
 	else
@@ -48,8 +48,7 @@ t_philo	*philo_init(int num, t_everything *eth)
 	new->state = -1;
 	new->is_living = -1;
 	new->meals = 0;
-	new->ts.tv_sec = 0;
-	new->ts.tv_usec = 0;
+	new->start = 0;
 	return (new);
 }
 

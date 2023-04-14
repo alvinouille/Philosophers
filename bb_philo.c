@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   bb_philo.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:26:07 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/31 15:02:08 by ale-sain         ###   ########.fr       */
+/*   Updated: 2023/04/14 18:30:11 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
 
 int	ft_usleep(int num, long time, t_philo *philo)
 {
@@ -80,32 +81,31 @@ static int    eat(t_philo *philo)
 		}
 	}
     philo->state = ABOUT_TO_EAT;
-	master_of_time(0, 0, NULL);
 	master_of_time(philo->num, ABOUT_TO_EAT, philo);
 	if (!ft_usleep(philo->num, philo->eth->time_to_eat, philo))
 		return (0);
-	if (philo->eth->nb_meal)
-	{
-		philo->meals++;
-		if (philo->meals <= philo->eth->nb_meal)
-		{
-			if (enough_meal(philo->eth->nb_meal, philo->eth->philosopher, 1))
-			{
-				printf("1\n");
-				// exit(0);
-				return (0);
-			}
-		}
-		else
-		{
-			if (enough_meal(philo->eth->nb_meal, philo->eth->philosopher, 0))
-			{
-				printf("2\n");
-				return (0);
-			}
-				// return (0);
-		}
-	}
+	// if (philo->eth->nb_meal)
+	// {
+	// 	philo->meals++;
+	// 	if (philo->meals <= philo->eth->nb_meal)
+	// 	{
+	// 		if (enough_meal(philo->eth->nb_meal, philo->eth->philosopher, 1))
+	// 		{
+	// 			printf("1\n");
+	// 			// exit(0);
+	// 			return (0);
+	// 		}
+	// 	}
+	// 	else
+	// 	{
+	// 		if (enough_meal(philo->eth->nb_meal, philo->eth->philosopher, 0))
+	// 		{
+	// 			printf("2\n");
+	// 			return (0);
+	// 		}
+	// 			// return (0);
+	// 	}
+	// }
 	if (philo->num == 1)
 	{
 		if (philo->fork_one)
@@ -183,15 +183,19 @@ int	master_of_time(int num, int state, t_philo *philo)
 	}
 	gettimeofday(&now, NULL);
 	time = ms_time(now) - ms_time(ts);
-	if (time > philo->eth->time_to_die)
+	if (time - philo->start > philo->eth->time_to_die)
 	{
-		printf("%ld : philo %d died\n", time, num);
+		pthread_mutex_lock(&(philo->eth->finish));
+		printf("%ld : philo %d died\n", time, philo->num);
 		return (0);
 	}
 	else if (state != -1)
 	{
 		if (state == ABOUT_TO_EAT)
+		{
+			philo->start = time;
 			printf("%ld : philo %d is eating\n", time, num);
+		}
 		else if (state == ABOUT_TO_SLEEP)
 			printf("%ld : philo %d is sleeping\n", time, num);
 		else if (state == ABOUT_TO_THINK)
@@ -223,7 +227,6 @@ static void	*life(void *arg)
                 philo->is_living = think(philo);
 		}
 	}
-	printf("end\n");
 	return (NULL);
 }
 
@@ -252,7 +255,10 @@ int main(int ac, char **av)
 	while (i < eth->philosopher)
     {
         if (pthread_join(philo[i]->thread, NULL) == 0)
+		{
+			pthread_mutex_unlock(&(philo[i]->eth->finish));
 			return (0);
+		}
 		i++;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 22:00:23 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/10 19:41:43 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/14 17:37:25 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ typedef struct s_everything
 {
 	int		philosopher;
 	int		fork;
-	long	start;
 	long	time_to_die;
 	long	time_to_eat;
 	long	time_to_sleep;
 	int		nb_meal;
+	pthread_mutex_t	finish;
 }				t_everything;
 
 typedef struct s_philo
@@ -50,7 +50,7 @@ typedef struct s_philo
 	int				state;
 	long			is_living;
 	int				meals;
-	struct timeval	ts;
+	long			start;
 	t_everything	*eth;
 }				t_philo;
 
