@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   n_init.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/07 10:48:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/03/09 20:45:24 by alvina           ###   ########.fr       */
+/*   Created: 2023/04/16 19:25:29 by alvina            #+#    #+#             */
+/*   Updated: 2023/04/16 20:28:05 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,10 @@ t_everything	*eth_object(int ac, char **av)
 	eth = malloc(sizeof(t_everything));
 	eth->philosopher = (int)ft_atoll(av[1]);
 	eth->fork = eth->philosopher;
-	eth->start = 0;
+	eth->departure = 0;
+	eth->ones_dead = 0;
+	eth->enough_meal = 0;
+    pthread_mutex_init(&(eth->finish), NULL);
 	eth->time_to_die = ft_atoll(av[2]);
 	eth->time_to_eat = ft_atoll(av[3]);
 	eth->time_to_sleep = ft_atoll(av[4]);
@@ -46,10 +49,8 @@ t_philo	*philo_init(int num, t_everything *eth)
 	new->fork_one = 0;
 	new->fork_two = 0;
 	new->state = -1;
-	new->is_living = -1;
 	new->meals = 0;
-	new->ts.tv_sec = 0;
-	new->ts.tv_usec = 0;
+	new->has_eaten = get_time();
 	return (new);
 }
 
