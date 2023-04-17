@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 18:23:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/17 19:17:22 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/17 19:28:58 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,10 @@
 
 int checking(t_philo *philo)
 {
-    // printf("time = %ld\n", master_of_time(philo, SINCE_MEAL));
     if (master_of_time(philo, SINCE_MEAL) > philo->eth->time_to_die)
     {
-            philo->eth->ones_dead = 1;
-            return (0);
+		philo->eth->ones_dead = 1;
+		return (0);
     }
     return (1);
 }
@@ -150,8 +149,8 @@ int	ft_usleep(int num, long time, t_philo *philo)
 	{
 		usleep(1000);
 		start += 1;
-		// if (!checking(philo))
-        //     return (0);
+		if (!checking(philo))
+            return (0);
 	}
 	return (1);
 }
