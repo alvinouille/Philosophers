@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:20 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/16 20:27:58 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/17 19:18:01 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@
 
 typedef enum e_enum
 {
-	ABOUT_TO_EAT,
-	ABOUT_TO_SLEEP,
-	ABOUT_TO_THINK,
-	TAKE_A_FORK
+	EATING,
+	SLEEPING,
+	THINKING,
+	TAKING_FORK
 }	t_enum;
 
 typedef struct s_fork
@@ -32,16 +32,17 @@ typedef struct s_fork
 
 typedef struct s_everything
 {
-	int			philosopher;
-	int			fork;
-	int			ones_dead;
-	int			enough_meal;
+	int				philosopher;
+	int				fork;
+	int				ones_dead;
+	int				enough_meal;
 	pthread_mutex_t	finish;
-	long 	departure;
-	long	time_to_die;
-	long	time_to_eat;
-	long	time_to_sleep;
-	int			nb_meal;
+	pthread_mutex_t	msg;
+	long 			departure;
+	long			time_to_die;
+	long			time_to_eat;
+	long			time_to_sleep;
+	int				nb_meal;
 }				t_everything;
 
 typedef struct s_philo
@@ -51,7 +52,7 @@ typedef struct s_philo
 	int				fork_one;
 	int				fork_two;
 	int				state;
-	long		has_eaten;
+	long			has_eaten;
 	int				meals;
 	t_everything	*eth;
 }				t_philo;

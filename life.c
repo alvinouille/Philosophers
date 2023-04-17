@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 18:23:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/16 20:31:55 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/17 19:17:22 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,18 @@ int checking(t_philo *philo)
 
 void    print_msg(long ts, t_philo *philo)
 {
-    if (philo->state == ABOUT_TO_EAT)
+    pthread_mutex_lock(&(philo->eth->msg));
+	if (philo->state == EATING)
         printf("%ld : philo %d is eating\n", ts, philo->num);
-    else if (philo->state == ABOUT_TO_SLEEP)
+    else if (philo->state == SLEEPING)
         printf("%ld : philo %d is sleeping\n", ts, philo->num);
-    else if (philo->state == ABOUT_TO_THINK)
+    else if (philo->state == THINKING)
         printf("%ld : philo %d is thinking\n", ts, philo->num);
-    else if (philo->state == TAKE_A_FORK)
+    else if (philo->state == TAKING_FORK)
         printf("%ld : philo %d has taken a fork\n", ts, philo->num);
     else
         printf("%ld : philo %d died\n", ts, philo->num);
+	pthread_mutex_unlock(&(philo->eth->msg));
 }
 
 long get_time(void)
@@ -44,13 +46,12 @@ long get_time(void)
     struct timeval time;
     
     gettimeofday(&time, NULL);
-    return (((time.tv_sec * 1000000) + time.tv_usec) / 1000);
+    return (((time.tv_sec * 1000) + (time.tv_usec / 1000)));
 }
 void    death_checker(t_philo **philo)
 {
     int i;
     t_everything *eth;
-    // printf("!!!!\n");
     eth = (*philo)->eth;
     while (!eth->ones_dead)
     {
@@ -58,7 +59,6 @@ void    death_checker(t_philo **philo)
         while (i < eth->philosopher && !eth->ones_dead)
         {
             // printf("...\n");
-            // pthread_mutex_lock(&eth->finish);
             if (!checking(philo[i]))
             {
                 pthread_mutex_lock(&eth->finish);
@@ -67,8 +67,6 @@ void    death_checker(t_philo **philo)
                 eth->ones_dead = 1;
                 pthread_mutex_unlock(&eth->finish);
             }
-            // pthread_mutex_unlock(&eth->finish);
-            // usleep(100);
             i++;
         }
     }
@@ -160,73 +158,62 @@ int	ft_usleep(int num, long time, t_philo *philo)
 
 static void    eat(t_philo *philo)
 {
-    philo->state = TAKE_A_FORK;
+    philo->state = TAKING_FORK;
 	taking_forks(philo);
-    philo->state = ABOUT_TO_EAT;
+    philo->state = EATING;
 	print_msg(master_of_time(philo, ALL_ALONG), philo);
     philo->has_eaten = get_time();
 	if (!ft_usleep(philo->num, philo->eth->time_to_eat, philo))
         return ;
 	leaving_forks(philo);
-    philo->state = ABOUT_TO_SLEEP;
 }
 
 static void    sleep_(t_philo *philo)
 {
-    printf("sleep\n");
+    philo->state = SLEEPING;
 	print_msg(master_of_time(philo, ALL_ALONG), philo);
 	if (!ft_usleep(philo->num, philo->eth->time_to_sleep, philo))
 		return ;
-    philo->state = ABOUT_TO_THINK;
 }
 
 static void    think(t_philo *philo)
 {
-    printf("think\n");
+	philo->state = THINKING;
 	print_msg(master_of_time(philo, ALL_ALONG), philo);
 	if (!ft_usleep(philo->num, 1, philo))
 		return ;
-	philo->state = TAKE_A_FORK;
 }
 
-static int	departure(t_philo *philo)
+static void	departure(t_philo *philo)
 {
 	if (philo->num % 2 != 0)
 	{
 		if (philo->eth->philosopher != philo->num)
-		{
-            philo->state = TAKE_A_FORK;
             eat(philo);
-        }
 		else
-		{
-            philo->state = ABOUT_TO_SLEEP;
             sleep_(philo);
-        }
 	}
 	else
-	{
-        philo->state = ABOUT_TO_THINK;
         think(philo);
-    }
 }
 
 void	*life(void *arg)
 {
 	t_philo			*philo;
+	t_everything	*eth;
 
 	philo = (t_philo *)arg;
+	eth = philo->eth;
     departure(philo);
-	while (!philo->eth->ones_dead)
+	while (!eth->ones_dead)
 	{
-        if (philo->state == TAKE_A_FORK)
+        if (philo->state == THINKING)
             eat(philo);
-        else if (philo->state == ABOUT_TO_SLEEP)
+        else if (philo->state == EATING)
             sleep_(philo);
         else
             think(philo);
 	}
-	printf("end\n");
 	return (NULL);
 }
 
@@ -253,7 +240,7 @@ int main(int ac, char **av)
 		i++;
 	}
 	i = 0;
-    // death_checker(philo);
+    death_checker(philo);
 	while (i < eth->philosopher)
     {
         if (pthread_join(philo[i]->thread, NULL) == 0)

@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:29 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/16 20:28:05 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/17 19:17:27 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ t_everything	*eth_object(int ac, char **av)
 	eth->ones_dead = 0;
 	eth->enough_meal = 0;
     pthread_mutex_init(&(eth->finish), NULL);
+	pthread_mutex_init(&(eth->msg), NULL);
 	eth->time_to_die = ft_atoll(av[2]);
 	eth->time_to_eat = ft_atoll(av[3]);
 	eth->time_to_sleep = ft_atoll(av[4]);
