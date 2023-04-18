@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   n_init.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:29 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/18 14:04:43 by ale-sain         ###   ########.fr       */
+/*   Updated: 2023/04/18 18:18:32 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ t_philo	*philo_init(int num, t_everything *eth)
 {
 	t_philo *new;
 	pthread_t p;
-	pthread_mutex_t fork;
 
 	new = malloc(sizeof(t_philo));
 	new->eth = eth;

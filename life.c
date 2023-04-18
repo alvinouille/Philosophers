@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   life.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 18:23:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/18 14:10:19 by ale-sain         ###   ########.fr       */
+/*   Updated: 2023/04/18 18:24:38 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int checking(t_philo *philo)
 
 void    print_msg(long ts, t_philo *philo)
 {
-    if (philo->eth->ones_dead)
+    if (philo->eth->ones_dead || philo->eth->stop_meal)
 		return ;
 	pthread_mutex_lock(&(philo->eth->msg));
 	if (philo->state == EATING)
@@ -64,6 +64,8 @@ void    death_checker(t_philo **philo)
                 pthread_mutex_lock(&eth->finish);
 				printf("%ld : philo %d died\n", get_time() - eth->departure, philo[i]->num);
                 eth->ones_dead = 1;
+				if (eth->philosopher == 1)
+					what_the_fork(philo[i]->num, 0, eth);
                 pthread_mutex_unlock(&eth->finish);
             }
             i++;
@@ -163,7 +165,7 @@ int	mealing(t_philo *philo)
 		philo->eth->all_meal++;
 	if (philo->eth->all_meal >= (philo->eth->nb_meal * philo->eth->philosopher))
 	{
-		printf("all : %d\n, this philo : %d\n", philo->eth->all_meal, philo->eth->nb_meal);
+		// printf("all : %d\n, this philo : %d\n", philo->eth->all_meal, philo->eth->nb_meal);
 		philo->eth->stop_meal = 1;
 		return (0);
 	}
@@ -233,6 +235,27 @@ void	*life(void *arg)
 	return (NULL);
 }
 
+void	cleaning(t_philo **philo)
+{
+	t_everything	*eth;
+	int				i;
+	int				nb;
+
+	i = 0;
+	eth = (t_everything *)(*philo)->eth;
+	what_the_fork(0, -2, eth);
+	pthread_mutex_destroy(&(eth->msg));
+	pthread_mutex_destroy(&(eth->finish));
+	nb = eth->philosopher;
+	free(eth);
+	while (i < nb)
+	{
+		free(philo[i]);
+		i++;
+	}
+	free(philo);
+}
+
 int main(int ac, char **av)
 {
 	t_everything	*eth;
@@ -260,8 +283,9 @@ int main(int ac, char **av)
 	while (i < eth->philosopher)
     {
         if (pthread_join(philo[i]->thread, NULL) == 0)
-			return (0);
+			// return (0);
 		i++;
 	}
 	pthread_mutex_unlock(&eth->finish);
+	cleaning(philo);
 }
