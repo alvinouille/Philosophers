@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   n_init.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:29 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/17 19:17:27 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/18 14:04:43 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ t_everything	*eth_object(int ac, char **av)
 	eth->fork = eth->philosopher;
 	eth->departure = 0;
 	eth->ones_dead = 0;
-	eth->enough_meal = 0;
+	eth->all_meal = 0;
+	eth->stop_meal = 0;
     pthread_mutex_init(&(eth->finish), NULL);
 	pthread_mutex_init(&(eth->msg), NULL);
 	eth->time_to_die = ft_atoll(av[2]);

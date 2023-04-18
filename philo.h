@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:20 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/17 19:18:01 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/18 14:04:50 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ typedef struct s_everything
 	int				philosopher;
 	int				fork;
 	int				ones_dead;
-	int				enough_meal;
+	int				all_meal;
+	int				stop_meal;
 	pthread_mutex_t	finish;
 	pthread_mutex_t	msg;
 	long 			departure;
