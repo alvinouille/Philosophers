@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 18:23:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/19 09:41:27 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/19 20:16:59 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,32 @@ long get_time(void)
     gettimeofday(&time, NULL);
     return (((time.tv_sec * 1000) + (time.tv_usec / 1000)));
 }
+
+int	check_mealing(t_philo **philo)
+{
+	int				i;
+	t_everything	*eth;
+
+	eth = (t_everything *)(*philo)->eth;
+	if (!eth->nb_meal)
+		return (1);
+	i = -1;
+	while (++i < eth->philosopher)
+	{
+		pthread_mutex_lock(&(philo[i]->mealing));
+		if (philo[i]->meals < eth->nb_meal)
+		{
+			pthread_mutex_unlock(&(philo[i]->mealing));
+			return (1);
+		}
+		pthread_mutex_unlock(&(philo[i]->mealing));
+	}
+	pthread_mutex_lock(&eth->finish);
+	eth->ones_dead = 1;
+	pthread_mutex_unlock(&eth->finish);
+	return (0);
+	}
+
 void    death_checker(t_philo **philo)
 {
     int i;
@@ -59,16 +85,16 @@ void    death_checker(t_philo **philo)
     while (1)
     {
         i = 0;
+		if (!check_mealing(philo))
+			return ;
         while (i < eth->philosopher)
         {
-            if (!checking(philo[i]) || eth->stop_meal)
+            if (!checking(philo[i]))
             {
-				printf("%ld : philo %d died\n", get_time() - eth->departure, philo[i]->num);
 				pthread_mutex_lock(&eth->finish);
-                eth->ones_dead = 1;
+				printf("%ld : philo %d died\n", get_time() - eth->departure, philo[i]->num);
+                eth->ones_dead= 1; 
 				pthread_mutex_unlock(&eth->finish);
-				// if (eth->philosopher == 1)
-				// 	what_the_fork(philo[i]->num, 0, eth);
 				return ;
             }
             i++;
@@ -87,9 +113,9 @@ long	master_of_time(t_philo *philo, int flag)
         return (time - philo->eth->departure);
     else
 	{
-		pthread_mutex_lock(&philo->eth->mealing);
+		pthread_mutex_lock(&philo->mealing);
 		res = time - philo->has_eaten;
-		pthread_mutex_unlock(&philo->eth->mealing);
+		pthread_mutex_unlock(&philo->mealing);
 		return (res);
 	}
 }
@@ -174,20 +200,6 @@ int	ft_usleep(int num, long time, t_philo *philo)
 	}
 	return (1);
 }
-int	mealing(t_philo *philo)
-{
-	if (!(philo->eth->nb_meal))
-		return (1);
-	philo->meals++;
-	if (philo->meals <= philo->eth->nb_meal)
-		philo->eth->all_meal++;
-	if (philo->eth->all_meal >= (philo->eth->nb_meal * philo->eth->philosopher))
-	{
-		philo->eth->stop_meal = 1;
-		return (0);
-	}
-	return (1);
-}
 
 static void    eat(t_philo *philo)
 {
@@ -200,17 +212,16 @@ static void    eat(t_philo *philo)
 	}
     philo->state = EATING;
 	print_msg(philo);
-	pthread_mutex_lock(&(philo->eth->mealing));
+	pthread_mutex_lock(&(philo->mealing));
     philo->has_eaten = get_time();
-	pthread_mutex_unlock(&(philo->eth->mealing));
+	philo->meals++;
+	pthread_mutex_unlock(&(philo->mealing));
 	if (!ft_usleep(philo->num, philo->eth->time_to_eat, philo))
     {
 		leaving_forks(philo);
 		return ;
 	}
 	leaving_forks(philo);
-	if (!mealing(philo))
-		return ;
 }
 
 static void    sleep_(t_philo *philo)
@@ -242,8 +253,14 @@ void	*life(void *arg)
 	philo = (t_philo *)arg;
 	eth = philo->eth;
     departure(philo);
-	while (!eth->stop_meal)
+	while (1)
 	{
+        if (philo->state == THINKING)
+            eat(philo);
+        else if (philo->state == EATING)
+            sleep_(philo);
+        else
+            think(philo);
 		pthread_mutex_lock(&philo->eth->finish);
 		if (philo->eth->ones_dead == 1)
 		{
@@ -251,12 +268,6 @@ void	*life(void *arg)
 			break ;
 		}
 		pthread_mutex_unlock(&philo->eth->finish);
-        if (philo->state == THINKING)
-            eat(philo);
-        else if (philo->state == EATING)
-            sleep_(philo);
-        else
-            think(philo);
 	}
 	return (NULL);
 }

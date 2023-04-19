@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:20 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/19 09:35:07 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/19 19:51:23 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ typedef struct s_everything
 	int				stop_meal;
 	pthread_mutex_t	finish;
 	pthread_mutex_t	msg;
-	pthread_mutex_t	mealing;
 	long 			departure;
 	long			time_to_die;
 	long			time_to_eat;
@@ -51,6 +50,7 @@ typedef struct s_philo
 {
 	int				num;
 	pthread_t		thread;
+	pthread_mutex_t	mealing;
 	int				fork_one;
 	int				fork_two;
 	int				state;
