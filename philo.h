@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:20 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/18 14:04:50 by ale-sain         ###   ########.fr       */
+/*   Updated: 2023/04/19 09:35:07 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_everything
 	int				stop_meal;
 	pthread_mutex_t	finish;
 	pthread_mutex_t	msg;
+	pthread_mutex_t	mealing;
 	long 			departure;
 	long			time_to_die;
 	long			time_to_eat;

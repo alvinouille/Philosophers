@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 18:23:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/18 18:24:38 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/19 09:41:27 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@ void    print_msg(long ts, t_philo *philo);
 
 int checking(t_philo *philo)
 {
-    if (master_of_time(philo, SINCE_MEAL) > philo->eth->time_to_die)
-    {
+    if ((master_of_time(philo, SINCE_MEAL) > philo->eth->time_to_die))
+	{
 		philo->eth->ones_dead = 1;
 		return (0);
-    }
+	}
     return (1);
 }
 
@@ -63,7 +63,7 @@ void    death_checker(t_philo **philo)
             {
                 pthread_mutex_lock(&eth->finish);
 				printf("%ld : philo %d died\n", get_time() - eth->departure, philo[i]->num);
-                eth->ones_dead = 1;
+                // eth->ones_dead = 1;
 				if (eth->philosopher == 1)
 					what_the_fork(philo[i]->num, 0, eth);
                 pthread_mutex_unlock(&eth->finish);
@@ -75,13 +75,19 @@ void    death_checker(t_philo **philo)
 
 long	master_of_time(t_philo *philo, int flag)
 {
-    long       time;
+    long       	time;
+	long		res;
 
 	time = get_time();
 	if (flag == ALL_ALONG)
         return (time - philo->eth->departure);
     else
-        return (time - philo->has_eaten);
+	{
+		pthread_mutex_lock(&philo->eth->mealing);
+		res = time - philo->has_eaten;
+		pthread_mutex_unlock(&philo->eth->mealing);
+		return (res);
+	}
 }
 
 static void taking_forks(t_philo *philo)
@@ -144,15 +150,18 @@ static void leaving_forks(t_philo *philo)
 
 int	ft_usleep(int num, long time, t_philo *philo)
 {
-	long start;
+	long 	start;
+	long	now;
 
-	start = 0;
-	while (start < time)
+	start = get_time();
+	while (1)
 	{
-		usleep(1000);
-		start += 1;
+		now = get_time();
 		if (!checking(philo))
             return (0);
+		if (now - start >= time)
+			return (1);
+		usleep(50);
 	}
 	return (1);
 }
@@ -165,7 +174,6 @@ int	mealing(t_philo *philo)
 		philo->eth->all_meal++;
 	if (philo->eth->all_meal >= (philo->eth->nb_meal * philo->eth->philosopher))
 	{
-		// printf("all : %d\n, this philo : %d\n", philo->eth->all_meal, philo->eth->nb_meal);
 		philo->eth->stop_meal = 1;
 		return (0);
 	}
@@ -178,7 +186,9 @@ static void    eat(t_philo *philo)
 	taking_forks(philo);
     philo->state = EATING;
 	print_msg(master_of_time(philo, ALL_ALONG), philo);
+	pthread_mutex_lock(&(philo->eth->mealing));
     philo->has_eaten = get_time();
+	pthread_mutex_unlock(&(philo->eth->mealing));
 	if (!ft_usleep(philo->num, philo->eth->time_to_eat, philo))
         return ;
 	leaving_forks(philo);
