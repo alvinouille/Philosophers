@@ -6,12 +6,24 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:29 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/19 19:51:13 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/20 15:39:00 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+int	arg_checker(long nb)
+{
+	if (nb == -1 || nb > 2147483647)
+		return (0);
+	return (1);
+}
+void	eth_clean(t_everything *eth)
+{
+	pthread_mutex_destroy(&(eth->finish));
+	pthread_mutex_destroy(&(eth->msg));
+	free(eth);
+}
 t_everything	*eth_object(int ac, char **av)
 {
 	static t_everything *eth;
@@ -20,6 +32,8 @@ t_everything	*eth_object(int ac, char **av)
 		return (eth);
 	eth = malloc(sizeof(t_everything));
 	eth->philosopher = (int)ft_atoll(av[1]);
+	if (!arg_checker(eth->philosopher))
+		return (free(eth), NULL);
 	eth->fork = eth->philosopher;
 	eth->departure = 0;
 	eth->ones_dead = 0;
@@ -30,10 +44,17 @@ t_everything	*eth_object(int ac, char **av)
 	eth->time_to_die = ft_atoll(av[2]);
 	eth->time_to_eat = ft_atoll(av[3]);
 	eth->time_to_sleep = ft_atoll(av[4]);
+	if (!arg_checker(eth->time_to_sleep) || !arg_checker(eth->time_to_die)
+		|| !arg_checker(eth->time_to_eat))
+		return (eth_clean(eth), NULL);
 	if (ac == 6)
+	{
 		eth->nb_meal = (int)ft_atoll(av[5]);
+		if (!arg_checker(eth->nb_meal))
+			return (eth_clean(eth), NULL);
+	}
 	else
-		eth->nb_meal = 0;
+		eth->nb_meal = -1;
 	return (eth);
 }
 

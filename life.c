@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 18:23:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/19 20:16:59 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/20 16:21:20 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,13 @@ void    print_msg(t_philo *philo)
 	}
 	pthread_mutex_lock(&(philo->eth->msg));
 	if (philo->state == EATING)
-        printf("%ld : philo %d is eating\n", master_of_time(philo, ALL_ALONG), philo->num);
+        printf("%ld %d is eating\n", master_of_time(philo, ALL_ALONG), philo->num);
     else if (philo->state == SLEEPING)
-        printf("%ld : philo %d is sleeping\n", master_of_time(philo, ALL_ALONG), philo->num);
+        printf("%ld %d is sleeping\n", master_of_time(philo, ALL_ALONG), philo->num);
     else if (philo->state == THINKING)
-        printf("%ld : philo %d is thinking\n", master_of_time(philo, ALL_ALONG), philo->num);
+        printf("%ld %d is thinking\n", master_of_time(philo, ALL_ALONG), philo->num);
     else
-        printf("%ld : philo %d has taken a fork\n", master_of_time(philo, ALL_ALONG), philo->num);
+        printf("%ld %d has taken a fork\n", master_of_time(philo, ALL_ALONG), philo->num);
 	pthread_mutex_unlock(&(philo->eth->msg));
 	pthread_mutex_unlock(&(philo->eth->finish));
 }
@@ -58,7 +58,7 @@ int	check_mealing(t_philo **philo)
 	t_everything	*eth;
 
 	eth = (t_everything *)(*philo)->eth;
-	if (!eth->nb_meal)
+	if (eth->nb_meal == -1)
 		return (1);
 	i = -1;
 	while (++i < eth->philosopher)
@@ -92,7 +92,7 @@ void    death_checker(t_philo **philo)
             if (!checking(philo[i]))
             {
 				pthread_mutex_lock(&eth->finish);
-				printf("%ld : philo %d died\n", get_time() - eth->departure, philo[i]->num);
+				printf("%ld %d died\n", get_time() - eth->departure, philo[i]->num);
                 eth->ones_dead= 1; 
 				pthread_mutex_unlock(&eth->finish);
 				return ;
@@ -241,7 +241,6 @@ static void    think(t_philo *philo)
 static void	departure(t_philo *philo)
 {
 	if (philo->num % 2 == 0)
-		// usleep(15000);
 		ft_usleep(philo->num, philo->eth->time_to_eat / 10, philo);
 }
 
@@ -281,12 +280,11 @@ void	cleaning(t_philo **philo)
 	i = 0;
 	eth = (t_everything *)(*philo)->eth;
 	what_the_fork(0, -2, eth);
-	pthread_mutex_destroy(&(eth->msg));
-	pthread_mutex_destroy(&(eth->finish));
 	nb = eth->philosopher;
-	free(eth);
+	eth_clean(eth);
 	while (i < nb)
 	{
+		pthread_mutex_destroy(&(philo[i]->mealing));
 		free(philo[i]);
 		i++;
 	}
@@ -303,24 +301,32 @@ int main(int ac, char **av)
 	if (ac < 5 || ac > 6)
 	{
 		printf("Error nb of args\n");
-		exit(EXIT_FAILURE);
+		return (1);
 	}
 	i = 0;
 	eth = eth_object(ac, av);
+	if (!eth)
+	{
+		printf("Error syntax\n");
+		return (1);
+	}
+	if (!eth->nb_meal || !eth->philosopher)
+		return (eth_clean(eth), 0);
 	philo = tab_philo_init(eth->philosopher, eth);
 	what_the_fork(0, -1, eth);
     eth->departure = get_time();
 	while (i < eth->philosopher)
 	{
-		pthread_create(&(philo[i]->thread), NULL, life, (void *)philo[i]);
+		if (pthread_create(&(philo[i]->thread), NULL, life, (void *)philo[i]))
+			return (cleaning(philo), 2);
 		i++;
 	}
 	i = 0;
     death_checker(philo);
 	while (i < eth->philosopher)
     {
-        if (pthread_join(philo[i]->thread, NULL) == 0)
-			// return (0);
+        if (pthread_join(philo[i]->thread, NULL))
+			return (cleaning(philo), 2);
 		i++;
 	}
 	cleaning(philo);

@@ -6,7 +6,7 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:20 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/19 19:51:23 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/20 15:38:53 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,3 +71,4 @@ int	what_the_fork(int num, int lock, t_everything *eth);
 t_fork **tab_fork_init(t_everything *eth);
 
 long get_time(void);
+void	eth_clean(t_everything *eth);
