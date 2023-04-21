@@ -6,18 +6,11 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:29 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/21 18:53:01 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/21 19:21:36 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	arg_checker(long nb)
-{
-	if (nb == -1 || nb > 2147483647)
-		return (0);
-	return (1);
-}
 
 t_everything	*eth_object(int ac, char **av)
 {
@@ -31,14 +24,7 @@ t_everything	*eth_object(int ac, char **av)
 	eth->philosopher = (int)ft_atoll(av[1]);
 	if (!arg_checker(eth->philosopher))
 		return (free(eth), NULL);
-	eth->fork = eth->philosopher;
-	eth->departure = 0;
-	eth->ones_dead = 0;
-	eth->all_meal = 0;
-	eth->stop_meal = 0;
-	pthread_mutex_init(&(eth->finish), NULL);
-	pthread_mutex_init(&(eth->msg), NULL);
-	eth->time_to_die = ft_atoll(av[2]);
+	initialising(&eth, eth->philosopher, av[2]);
 	eth->time_to_eat = ft_atoll(av[3]);
 	eth->time_to_sleep = ft_atoll(av[4]);
 	if (!arg_checker(eth->time_to_sleep) || !arg_checker(eth->time_to_die)
@@ -79,15 +65,12 @@ t_philo	**tab_philo_init(int nb, t_everything *eth)
 	int		j;
 	t_philo	**philo;
 
-	i = 0;
+	i = -1;
 	j = 0;
 	philo = malloc(sizeof(t_philo *) * nb);
 	if (!philo)
-	{
-		eth_clean(eth);
-		return (NULL);
-	}
-	while (i < nb)
+		return (eth_clean(eth), NULL);
+	while (++i < nb)
 	{
 		philo[i] = philo_init(i + 1, eth);
 		if (!philo[i])
@@ -101,7 +84,6 @@ t_philo	**tab_philo_init(int nb, t_everything *eth)
 			free(philo);
 			return (NULL);
 		}
-		i++;
 	}
 	return (philo);
 }
@@ -124,12 +106,12 @@ t_fork	**tab_fork_init(t_everything *eth)
 	int		j;
 	t_fork	**tab;
 
-	i = 0;
+	i = -1;
 	j = 0;
 	tab = malloc(sizeof(t_fork *) * eth->philosopher);
 	if (!tab)
 		return (NULL);
-	while (i < eth->philosopher)
+	while (++i < eth->philosopher)
 	{
 		tab[i] = fork_init();
 		if (!tab[i])
@@ -143,7 +125,6 @@ t_fork	**tab_fork_init(t_everything *eth)
 			free(tab);
 			return (NULL);
 		}
-		i++;
 	}
 	return (tab);
 }

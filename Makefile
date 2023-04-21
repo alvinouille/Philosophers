@@ -6,7 +6,7 @@
 #    By: alvina <alvina@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/25 16:02:08 by tedelin           #+#    #+#              #
-#    Updated: 2023/04/21 18:38:43 by alvina           ###   ########.fr        #
+#    Updated: 2023/04/21 19:21:50 by alvina           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CFLAGS = -Wall -Wextra
 
 CC = cc
 
-SRC = forked.c life.c init.c utils.c clean_check.c main.c
+SRC = forked.c life.c init.c utils.c clean_check.c main.c utils2.c
 
 OBJ = $(SRC:.c=.o)
 

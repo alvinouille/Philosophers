@@ -6,18 +6,20 @@
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 18:46:52 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/21 18:46:54 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/21 19:24:27 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include <unistd.h>
-
+#ifndef PHILO_H
+# define PHILO_H
 # define ALL_ALONG 25
 # define SINCE_MEAL 26
+
+# include <pthread.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <sys/time.h>
+# include <unistd.h>
 
 typedef enum e_enum
 {
@@ -76,6 +78,7 @@ t_philo				**tab_philo_init(int nb, t_everything *eth);
 t_philo				*philo_init(int num, t_everything *eth);
 t_everything		*eth_object(int ac, char **av);
 int					arg_checker(long nb);
+void				initialising(t_everything **eth, int nb, char *av);
 
 //		--- FORK ---
 void				leaving_forks(t_philo *philo);
@@ -93,3 +96,5 @@ int					check_mealing(t_philo **philo);
 
 //		--- LIFE ---
 void				*life(void *arg);
+
+#endif
