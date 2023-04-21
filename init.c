@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   n_init.c                                           :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:29 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/20 15:39:00 by alvina           ###   ########.fr       */
+/*   Updated: 2023/04/21 18:53:01 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,16 @@ int	arg_checker(long nb)
 		return (0);
 	return (1);
 }
-void	eth_clean(t_everything *eth)
-{
-	pthread_mutex_destroy(&(eth->finish));
-	pthread_mutex_destroy(&(eth->msg));
-	free(eth);
-}
+
 t_everything	*eth_object(int ac, char **av)
 {
-	static t_everything *eth;
+	static t_everything	*eth;
 
 	if (ac == 0)
 		return (eth);
 	eth = malloc(sizeof(t_everything));
+	if (!eth)
+		return (NULL);
 	eth->philosopher = (int)ft_atoll(av[1]);
 	if (!arg_checker(eth->philosopher))
 		return (free(eth), NULL);
@@ -39,7 +36,7 @@ t_everything	*eth_object(int ac, char **av)
 	eth->ones_dead = 0;
 	eth->all_meal = 0;
 	eth->stop_meal = 0;
-    pthread_mutex_init(&(eth->finish), NULL);
+	pthread_mutex_init(&(eth->finish), NULL);
 	pthread_mutex_init(&(eth->msg), NULL);
 	eth->time_to_die = ft_atoll(av[2]);
 	eth->time_to_eat = ft_atoll(av[3]);
@@ -58,16 +55,15 @@ t_everything	*eth_object(int ac, char **av)
 	return (eth);
 }
 
-
 t_philo	*philo_init(int num, t_everything *eth)
 {
-	t_philo *new;
-	pthread_t p;
+	t_philo	*new;
 
 	new = malloc(sizeof(t_philo));
+	if (!new)
+		return (NULL);
 	new->eth = eth;
 	new->num = num;
-	new->thread = p;
 	new->fork_one = 0;
 	new->fork_two = 0;
 	pthread_mutex_init(&(new->mealing), NULL);
@@ -80,38 +76,73 @@ t_philo	*philo_init(int num, t_everything *eth)
 t_philo	**tab_philo_init(int nb, t_everything *eth)
 {
 	int		i;
+	int		j;
 	t_philo	**philo;
 
 	i = 0;
+	j = 0;
 	philo = malloc(sizeof(t_philo *) * nb);
+	if (!philo)
+	{
+		eth_clean(eth);
+		return (NULL);
+	}
 	while (i < nb)
 	{
 		philo[i] = philo_init(i + 1, eth);
+		if (!philo[i])
+		{
+			while (j < i)
+			{
+				pthread_mutex_destroy(&(philo[j]->mealing));
+				free(philo[j]);
+				j++;
+			}
+			free(philo);
+			return (NULL);
+		}
 		i++;
 	}
-	return (philo);	
+	return (philo);
 }
 
 t_fork	*fork_init(void)
 {
-	t_fork *new;
+	t_fork	*new;
 
 	new = malloc(sizeof(t_fork));
+	if (!new)
+		return (NULL);
 	pthread_mutex_init(&(new->fork), NULL);
 	new->status = 0;
 	return (new);
 }
 
-t_fork **tab_fork_init(t_everything *eth)
+t_fork	**tab_fork_init(t_everything *eth)
 {
 	int		i;
+	int		j;
 	t_fork	**tab;
 
 	i = 0;
+	j = 0;
 	tab = malloc(sizeof(t_fork *) * eth->philosopher);
+	if (!tab)
+		return (NULL);
 	while (i < eth->philosopher)
 	{
 		tab[i] = fork_init();
+		if (!tab[i])
+		{
+			while (j < i)
+			{
+				pthread_mutex_destroy(&(tab[j]->fork));
+				free(tab[j]);
+				j++;
+			}
+			free(tab);
+			return (NULL);
+		}
 		i++;
 	}
 	return (tab);

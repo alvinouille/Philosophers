@@ -5,16 +5,19 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alvina <alvina@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/16 19:25:20 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/20 15:38:53 by alvina           ###   ########.fr       */
+/*   Created: 2023/04/21 18:46:52 by alvina            #+#    #+#             */
+/*   Updated: 2023/04/21 18:46:54 by alvina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
 #include <sys/time.h>
+#include <unistd.h>
+
+# define ALL_ALONG 25
+# define SINCE_MEAL 26
 
 typedef enum e_enum
 {
@@ -22,13 +25,13 @@ typedef enum e_enum
 	SLEEPING,
 	THINKING,
 	TAKING_FORK
-}	t_enum;
+}					t_enum;
 
 typedef struct s_fork
 {
-	pthread_mutex_t fork;
+	pthread_mutex_t	fork;
 	int				status;
-}				t_fork;
+}					t_fork;
 
 typedef struct s_everything
 {
@@ -39,12 +42,12 @@ typedef struct s_everything
 	int				stop_meal;
 	pthread_mutex_t	finish;
 	pthread_mutex_t	msg;
-	long 			departure;
+	long			departure;
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
 	int				nb_meal;
-}				t_everything;
+}					t_everything;
 
 typedef struct s_philo
 {
@@ -57,18 +60,36 @@ typedef struct s_philo
 	long			has_eaten;
 	int				meals;
 	t_everything	*eth;
-}				t_philo;
+}					t_philo;
 
 //   --- UTILS ---
-long	ft_atoll(const char *nptr);
+long				ft_atoll(const char *nptr);
+long				master_of_time(t_philo *philo, int flag);
+int					ft_usleep(long time, t_philo *philo);
+long				get_time(void);
+void				print_msg(t_philo *philo);
 
 //    --- INITIALISATION ---
-t_everything	*eth_object(int ac, char **av);
-t_philo	**tab_philo_init(int nb, t_everything *eth);
-t_philo	*philo_init(int num, t_everything *eth);
-long	master_of_time(t_philo *philo, int flag);
-int	what_the_fork(int num, int lock, t_everything *eth);
-t_fork **tab_fork_init(t_everything *eth);
+t_fork				**tab_fork_init(t_everything *eth);
+t_fork				*fork_init(void);
+t_philo				**tab_philo_init(int nb, t_everything *eth);
+t_philo				*philo_init(int num, t_everything *eth);
+t_everything		*eth_object(int ac, char **av);
+int					arg_checker(long nb);
 
-long get_time(void);
-void	eth_clean(t_everything *eth);
+//		--- FORK ---
+void				leaving_forks(t_philo *philo);
+int					taking_forks(t_philo *philo);
+int					what_the_fork(int num, int lock, t_everything *eth);
+
+//		--- CLEAN ---
+void				free_tab_fork(t_fork **fork, t_everything *eth);
+void				eth_clean(t_everything *eth);
+void				cleaning(t_philo **philo);
+
+//		--- CHECKER ---
+void				death_checker(t_philo **philo);
+int					check_mealing(t_philo **philo);
+
+//		--- LIFE ---
+void				*life(void *arg);
