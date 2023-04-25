@@ -6,7 +6,7 @@
 /*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 19:25:29 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/25 19:20:01 by ale-sain         ###   ########.fr       */
+/*   Updated: 2023/04/25 19:59:10 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,22 +21,15 @@ t_everything	*eth_object(int ac, char **av)
 	eth = malloc(sizeof(t_everything));
 	if (!eth)
 		return (NULL);
-	eth->philosopher = (int)ft_atoll(av[1]);
-	if (!arg_checker(eth->philosopher))
+	if (!eth_supp(&eth, ac, av))
 		return (free(eth), NULL);
-	eth->fork = eth->philosopher;
-	eth_supp(&eth, av);
-	if (!arg_checker(eth->time_to_sleep) || !arg_checker(eth->time_to_die)
-		|| !arg_checker(eth->time_to_eat))
-		return (eth_clean(eth), NULL);
-	if (ac == 6)
+	if (pthread_mutex_init(&(eth->finish), NULL))
+		return (free(eth), NULL);
+	if (pthread_mutex_init(&(eth->msg), NULL))
 	{
-		eth->nb_meal = (int)ft_atoll(av[5]);
-		if (!arg_checker(eth->nb_meal))
-			return (eth_clean(eth), NULL);
+		pthread_mutex_destroy(&(eth->finish));
+		return (free(eth), NULL);
 	}
-	else
-		eth->nb_meal = -1;
 	return (eth);
 }
 
@@ -51,7 +44,8 @@ t_philo	*philo_init(int num, t_everything *eth)
 	new->num = num;
 	new->fork_one = 0;
 	new->fork_two = 0;
-	pthread_mutex_init(&(new->mealing), NULL);
+	if (pthread_mutex_init(&(new->mealing), NULL))
+		return (free(new), NULL);
 	new->state = 2;
 	new->meals = 0;
 	new->has_eaten = get_time();

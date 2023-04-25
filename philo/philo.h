@@ -6,7 +6,7 @@
 /*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 18:46:52 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/25 19:20:58 by ale-sain         ###   ########.fr       */
+/*   Updated: 2023/04/25 19:54:11 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ long				master_of_time(t_philo *philo, int flag);
 int					ft_usleep(long time);
 long				get_time(void);
 void				print_msg(t_philo *philo);
-void				eth_supp(t_everything **eth, char **av);
+int					eth_supp(t_everything **eth, int ac, char **av);
 int					arg_checker(long nb);
 
 //    --- INITIALISATION ---
