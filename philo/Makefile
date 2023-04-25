@@ -6,17 +6,17 @@
 #    By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/25 16:02:08 by tedelin           #+#    #+#              #
-#    Updated: 2023/04/25 19:00:08 by ale-sain         ###   ########.fr        #
+#    Updated: 2023/04/25 19:25:20 by ale-sain         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-CFLAGS = -Wall -Wextra 
+CFLAGS = -Wall -Wextra -Werror
 
 CC = cc
 
-SRC = forked.c life.c init.c utils.c clean_check.c main.c
+SRC = forked.c life.c init.c utils.c clean_check.c main.c utils2.c
 
 OBJ = $(SRC:.c=.o)
 

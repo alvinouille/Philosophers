@@ -6,7 +6,7 @@
 /*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 21:17:56 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/25 18:50:19 by ale-sain         ###   ########.fr       */
+/*   Updated: 2023/04/25 19:05:34 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,17 @@ void	print_msg(t_philo *philo)
 	}
 	pthread_mutex_lock(&(philo->eth->msg));
 	if (philo->state == EATING)
-		printf("%ld %d is eating\n", get_time() - philo->eth->departure, philo->num);
+		printf("%ld %d is eating\n",
+			get_time() - philo->eth->departure, philo->num);
 	else if (philo->state == SLEEPING)
-		printf("%ld %d is sleeping\n", get_time() - philo->eth->departure, philo->num);
+		printf("%ld %d is sleeping\n",
+			get_time() - philo->eth->departure, philo->num);
 	else if (philo->state == THINKING)
-		printf("%ld %d is thinking\n", get_time() - philo->eth->departure, philo->num);
+		printf("%ld %d is thinking\n",
+			get_time() - philo->eth->departure, philo->num);
 	else
-		printf("%ld %d has taken a fork\n", get_time() - philo->eth->departure, philo->num);
+		printf("%ld %d has taken a fork\n",
+			get_time() - philo->eth->departure, philo->num);
 	pthread_mutex_unlock(&(philo->eth->msg));
 	pthread_mutex_unlock(&(philo->eth->finish));
 }

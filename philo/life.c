@@ -6,7 +6,7 @@
 /*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 18:23:11 by alvina            #+#    #+#             */
-/*   Updated: 2023/04/25 18:53:02 by ale-sain         ###   ########.fr       */
+/*   Updated: 2023/04/25 19:09:29 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ static void	eat(t_philo *philo)
 	pthread_mutex_lock(&(philo->mealing));
 	philo->has_eaten = get_time();
 	print_msg(philo);
-	// philo->has_eaten = get_time();
 	philo->meals++;
 	pthread_mutex_unlock(&(philo->mealing));
 	if (!ft_usleep(philo->eth->time_to_eat))
@@ -55,7 +54,6 @@ void	*life(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-
 	if (philo->num % 2 == 0)
 		ft_usleep(1);
 	while (1)
